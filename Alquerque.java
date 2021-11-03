@@ -2,10 +2,10 @@ import java.util.Scanner;
 
 public class Alquerque{
 
-    private static String blackName;
-    private static String whiteName;
-    static Board board;
-    static Scanner reader;
+    private String blackName;
+    private String whiteName;
+    private Board board;
+    private Scanner reader;
 
     public static void main(String[] args) {
         init();
@@ -41,6 +41,7 @@ public class Alquerque{
 
     /*
      * Initializations.
+     * Names of players.
      */
     public static void init(){
         reader = new Scanner(System.in);
