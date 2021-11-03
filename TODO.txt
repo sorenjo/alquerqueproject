@@ -1,0 +1,3 @@
+Mulighed for at spille menneske mod computer.
+Mulighed for at spille computer mod computer.
+Afsluttende tekst med hvem vandt.
