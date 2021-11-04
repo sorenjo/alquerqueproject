@@ -6,18 +6,36 @@ public class Alquerque{
     private static String whiteName;
     private static Board board;
     private static Scanner reader;
+    private static boolean isBlackComputer = false;
+    private static boolean isWhiteComputer = false;
+    private static final int WHITEWON = 1;
+    private static final int BLACKWON= 2;
+    private static final int DRAW = 4;
 
     public static void main(String[] args) {
         init();
         boolean whitesTurn = true;
-
         while (!board.isGameOver()){
             boolean isLegal = false;
-            Move move;
+            Move move = new Move(100, 100);
             printBoard();
             String currentPlayer = whitesTurn ? whiteName : blackName;
-            System.out.println(currentPlayer + "'s turn. Please enter your move,");
-            do{
+
+            //check for computer players
+            if (whitesTurn && isWhiteComputer){
+                System.out.println("White computer's turn");
+                move = Minimax.nextMove(board, 3, true);
+                isLegal = true;
+            }
+            else if (!whitesTurn && isBlackComputer){
+                System.out.println("Black computer's turn");
+                isLegal = true;
+                move = Minimax.nextMove(board, 1, false);
+            }
+            else
+                System.out.print(currentPlayer + "'s turn. Please enter your move.");
+
+            while(!isLegal) {
                 System.out.println("Where do you want to move from?");
                 int from = reader.nextInt();
                 System.out.println("Where do you want to move to?");
@@ -32,28 +50,44 @@ public class Alquerque{
                     if (!isLegal)
                         System.out.println("You've entered an illegal move");
                 }
-
-            } while (!isLegal);
+            }
             board.move(move);
             whitesTurn = !whitesTurn;
         }
+        System.out.println("Game is over. Final game state:");
+        printBoard();
+        if (whoWon() == WHITEWON)
+            System.out.println("White has won the game");
+        else if (whoWon() == BLACKWON)
+            System.out.println("Black has won the game");
+        else 
+            System.out.println("The game is a draw");
     }
 
     /*
      * Initializations.
      * Names of players.
      */
-    public static void init(){
+    private static void init(){
         reader = new Scanner(System.in);
         board = new Board();
-        System.out.println("Please enter name of black player: ");
+        System.out.println("Please enter name of black player: (blank for computer)");
         blackName = reader.nextLine().trim();
 
-        System.out.println("Please enter name of white player: ");
+        System.out.println("Please enter name of white player: (blank for computer)");
         whiteName = reader.nextLine().trim();
 
+        if (whiteName.equals(""))
+            isWhiteComputer = true;
+
+        if (blackName.equals(""))
+            isBlackComputer = true;
     }
-    public static void printBoard() {
+
+    /*
+     * Pretty prints the board
+     */
+    private static void printBoard() {
         char[] pieces = new char[25];
         for (int i = 0; i < 25; i++)
             pieces[i] = ' ';
@@ -75,5 +109,17 @@ public class Alquerque{
                     System.out.println("|/|\\|/|\\|");
             }
         }
+    }
+
+    /*
+     * Returns a string telling who has won or if the game is a draw
+     */
+    private static int whoWon() {
+        if (board.black().length == 0)
+            return WHITEWON;
+        else if (board.white().length == 0)
+            return BLACKWON;
+        else
+            return DRAW;
     }
 }
