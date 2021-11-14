@@ -16,6 +16,7 @@ public class Alquerque{
         init();
         boolean whitesTurn = true;
         Move move = new Move(100, 100);
+        // Main game loop
         while (!board.isGameOver()){
             boolean isLegal = false;
 
@@ -33,9 +34,10 @@ public class Alquerque{
                 move = Minimax.nextMove(board, 4, false);
                 isLegal = true;
             }
-            else
+            else // Human player
                 System.out.print(currentPlayer + "'s turn. ");
 
+            // Get some input representing a valid move
             while(!isLegal) {
                 System.out.println("Where do you want to move from?");
                 int from = reader.nextInt();
@@ -119,7 +121,7 @@ public class Alquerque{
     }
 
     /*
-     * Returns a string telling who has won or if the game is a draw
+     * Dertermines who has won or if the game is a draw.
      */
     private static int whoWon() {
         if (board.black().length == 0)
