@@ -121,7 +121,7 @@ public class Alquerque{
     }
 
     /*
-     * Dertermines who has won or if the game is a draw.
+     * Determines who has won or if the game is a draw.
      */
     private static int whoWon() {
         if (board.black().length == 0)
