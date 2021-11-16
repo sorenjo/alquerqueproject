@@ -15,7 +15,9 @@ public class Alquerque{
     public static void main(String[] args) {
         init();
         boolean whitesTurn = true;
-        Move move = new Move(100, 100);
+        // Initialize move to satisfy compiler
+        Move move = new Move(0, 0);
+
         // Main game loop
         while (!board.isGameOver()){
             boolean isLegal = false;
@@ -68,8 +70,7 @@ public class Alquerque{
     }
 
     /*
-     * Initializations.
-     * Names of players.
+     * Initialization of computer and player names
      */
     private static void init(){
         reader = new Scanner(System.in);
