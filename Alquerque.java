@@ -97,25 +97,25 @@ public class Alquerque{
      * Pretty prints the board
      */
     private static void printBoard() {
-        char[] pieces = new char[25];
-        for (int i = 0; i < 25; i++)
+        char[] pieces = new char[26];
+        for (int i = 1; i <= 25; i++)
             pieces[i] = ' ';
         for (int e: board.white())
-            pieces[e-1] = 'W';
+            pieces[e] = 'W';
         for (int e: board.black())
-            pieces[e-1] = 'B';
+            pieces[e] = 'B';
 
-        for (int j = 0; j < 25; j = j + 5){
-            for (int i = j; i < j + 4; i++)
+        for (int j = 1; j <= 25; j = j+5){
+            for (int i = j; i < j+4; i++)
                 System.out.print(pieces[i] + "-");
-                //System.out.print(i + "-");
-            //System.out.print(j+4 + "\n");
             System.out.print(pieces[j+4] + "\n");
-            if (j < 20){
+
+            // Print diagonal lines 4 times and change between direction every line
+            if (j <= 20){
                 if (j%2 == 0)
-                    System.out.println("|\\|/|\\|/|");
+                  System.out.println("|/|\\|/|\\|");
                 else
-                    System.out.println("|/|\\|/|\\|");
+                  System.out.println("|\\|/|\\|/|");
             }
         }
     }
