@@ -48,7 +48,7 @@ public class Alquerque{
 
                 move = new Move(from, to);
 
-                if (!(from >= 1 && from <= 25) || !(to >= 1 && to <= 25))
+                if ((from < 1 && from > 25) || (to < 1 && to > 25))
                     System.out.println("You've unfortunately entered a move outside the playing board. Please enter a new move");
                 else {
                     isLegal = board.isLegal(move);
