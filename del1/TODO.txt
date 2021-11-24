@@ -1,0 +1,3 @@
+Bedre dokumentation af koden.
+Eventuelt optimering.
+Eventuel forbedring af printBoard(), så den også inkluderer felters numre.
