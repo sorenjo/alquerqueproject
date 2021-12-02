@@ -5,31 +5,31 @@ public class Board{
     private int whiteCount, blackCount;
     private piece turn;
     private static int finishedGames = 0;
-    public enum piece {
+    public static enum piece {
         BLACK,
         WHITE,
         FREE
     }
 
     /*
-    * Setup a new game by initializing class attributes
+    * Setup a new game by initializing class attributes to Alquerques start values
     */
     public Board() {
-        board = new piece[26];
-        board[13] = piece.FREE;
+      this.whiteCount = 12;
+      this.blackCount = 12;
+      this.turn = piece.WHITE;
 
-        for (int i = 1; i <=12; i++)
-            board[i] = piece.BLACK;
-        for (int i = 14; i <=25; i++)
-            board[i] = piece.WHITE;
-
-        whiteCount = 12;
-        blackCount = 12;
-        turn = piece.WHITE;
+      this.board = new piece[26];
+      this.board[13] = piece.FREE;
+      for (int i = 1; i <= 12; i++)
+        this.board[i] = piece.BLACK;
+      for (int i = 14; i <= 25; i++)
+        this.board[i] = piece.WHITE;
     }
 
     /*
-    * Create a new board with positions given in arrays and turn
+    * Create a new board with positions given in arrays and sets current turn
+    * (Used for client class)
     */
     public Board(int[] whites, int[] blacks, piece turn) {
       this.whiteCount = whites.length;
@@ -46,14 +46,19 @@ public class Board{
     }
 
     /*
-    * Check if game is over
+    * Checks if game is over and increments finishedGames if so
     */
     public boolean isGameOver() {
-      Board.finishedGames++;
-      return legalMoves().length == 0;
+      boolean isGameOver = (black().length == 0 || white().length == 0 || legalMoves().length == 0);
+      if (isGameOver)
+        this.finishedGames++;
+      return isGameOver;
     }
 
-    private piece negate(piece piece) {
+    /*
+    * Returns opposite players piece
+    */
+    private piece oppositePlayer(piece piece) {
       if (piece == piece.WHITE)
         return piece.BLACK;
       else if (piece == piece.BLACK)
@@ -62,6 +67,9 @@ public class Board{
         return piece.FREE;
     }
 
+    /*
+    * Returns absolute value of x
+    */
     private int abs(int x) {
       return (x >= 0 ? x : -x);
     }
@@ -78,20 +86,16 @@ public class Board{
       return (abs(from - to) == 10);
     }
 
-    private boolean isLegalHorizontal(int from, int to) {
-      return (from - to == 2);
-    }
-
+    /*
+    * Sets killed piece's position to FREE and decreases its player's piece count by one
+    */
     private void kill(int index) {
-      if (board[index] == piece.WHITE) {
-        whiteCount--;
-        System.out.println("White killed");
-      }
-      else {
-        blackCount--;
-        System.out.println("Black killed");
-      }
-      board[index] = piece.FREE;
+      if (this.board[index] == piece.WHITE)
+        this.whiteCount--;
+      else
+        this.blackCount--;
+
+      this.board[index] = piece.FREE;
     }
 
     /*
@@ -99,27 +103,28 @@ public class Board{
     */
     public boolean isLegal(Move move) {
       boolean isLegal = false;
-      int originalFrom = move.from(), from = move.from();
-      int originalTo = move.to(), to = move.to();
-      int column;
+      int originalFrom = move.from(), from = originalFrom;
+      int originalTo = move.to(), to = originalTo;
+      int column = originalFrom % 5;
 
       // Return early if 'from' is not current players piece, or 'to' is not free
       if ((this.board[from] != this.turn) || (this.board[to] != piece.FREE))
         return false;
 
+      // Mirror logic if white player
       if (this.turn == piece.WHITE) {
         from = 26 - from;
         to = 26 - to;
         column = from % 5;
       }
-      else
-        column = originalFrom % 5;
 
       // Forward move (up for white, down for black)
       if (from + 5 == to)
         isLegal = true;
 
-      else {
+      // Check if move is diagonal
+      else if (from + 4 == to || from + 6 == to) {
+        // Switch case handle logic in specific columns
         switch (column) {
           // First column (left side)
           case 1:
@@ -142,85 +147,116 @@ public class Board{
             // Check for left diagonal move
             if ((from % 2 == 1) && (from + 4 == to))
               isLegal = true;
-
             break;
         }
+      }
 
-        if (board[(originalFrom+originalTo)/2] == negate(this.turn)) {
-          switch (column) {
-            case 1:
-            case 2:
-              if ((from % 2 == 1 && isLegalDiagonalRight(from, to)) || abs(from - to) == 10 || from + 2 == to) {
-                kill((originalFrom+originalTo)/2);
-                isLegal = true;
-              }
-              break;
-            case 3:
-              if ((from % 2 == 1 && (isLegalDiagonalLeft(from, to) || isLegalDiagonalRight(from, to))) || abs(from - to) == 10 || abs(from - to) == 2) {
-                kill((originalFrom+originalTo)/2);
-                isLegal = true;
-              }
-              break;
-            case 4:
-            case 0:
-              if ((from % 2 == 1 && isLegalDiagonalLeft(from, to)) || abs(from - to) == 10 || from - 2 == to) {
-                kill((originalFrom+originalTo)/2);
-                isLegal = true;
-              }
-              break;
-          }
+      // Only enter attack logic if piece inbetween 'from' and 'to' is an enemy piece
+      else if (this.board[(originalFrom + originalTo) / 2] == oppositePlayer(this.turn)) {
+        // Switch case to handle attack moves in specific columns
+        switch (column) {
+          // First and second columns
+          case 1:
+          case 2:
+            if ((from % 2 == 1 && isLegalDiagonalRight(from, to)) || isLegalVertical(from, to) || from + 2 == to) {
+              kill((originalFrom + originalTo) / 2);
+              isLegal = true;
+            }
+            break;
+
+          // Third column
+          case 3:
+            if ((from % 2 == 1 && (isLegalDiagonalLeft(from, to) || isLegalDiagonalRight(from, to))) || isLegalVertical(from, to) || abs(from - to) == 2) {
+              kill((originalFrom + originalTo) / 2);
+              isLegal = true;
+            }
+            break;
+
+          // Fourth and fifth columns
+          case 4:
+          case 0:
+            if ((from % 2 == 1 && isLegalDiagonalLeft(from, to)) || isLegalVertical(from, to) || from - 2 == to) {
+              kill((originalFrom + originalTo) / 2);
+              isLegal = true;
+            }
+            break;
         }
       }
+
       return isLegal;
     }
 
+    /*
+    * Returns an array of all current player's possible moves
+    */
     public Move[] legalMoves() {
-      ArrayList<Move> legalMoves = new ArrayList<Move>();
+      final ArrayList<Move> legalMoves = new ArrayList<Move>();
 
-      int[] possibleTos = {1, 2, 9, 10, 11, 18, 20, 22};
+      /*** int[] possibleTos = {1, 2, 9, 10, 11, 18, 20, 22};
 
       for (int i = 1; i <= 25; i++)
         for (int j = -1; j <= 1; j = j + 2)
           for (int to : possibleTos){
-            System.out.println(i + " " + (i + j*to));
             int t = i+j*i;
             if (t >= 1 && t <= 25) {
-              System.out.println("sådan");
               Move move = new Move(i, t);
               if (isLegal(move))
                 legalMoves.add(move);
             }
+          } ***/
+
+      /*** for (int i = 1; i <= 25; i++)
+        if (this.board[i] == this.turn)
+          for (int j = 1; j <= 25; j++) {
+            Move move = new Move(i, j);
+            if (isLegal(move))
+              legalMoves.add(move);
           }
 
-      //Move[] moves = [legalMoves.size()]
-      return legalMoves.toArray(new Move[0]);
+      final Move[] moves = new Move[legalMoves.size()];
+      for (int i = 0; i < moves.length; i++)
+        moves[i] = legalMoves.get(i);
+
+      return moves; ***/
+
+      return null;
     }
 
+
+    /*
+    * Moves piece using a Move-instance
+    */
     public void move(Move move) {
-        board[move.from()] = piece.FREE;
-        board[move.to()] = turn;
-        turn = negate(this.turn);
+      this.board[move.from()] = piece.FREE;
+      this.board[move.to()] = this.turn;
+      this.turn = oppositePlayer(this.turn);
     }
 
+    /*
+    * Returns an integer array of all black piece's positions
+    */
     public int[] black() {
-        int[] blacks = new int[blackCount];
-        int k = 0;
-        for (int i = 1; i <= 25; i++)
-            if (board[i] == piece.BLACK){
-                blacks[k] = i;
-                k = k + 1;
-            }
-        return blacks;
-    }
-
-    public int[] white() {
-      int[] whites = new int[whiteCount];
+      int[] blacks = new int[this.blackCount];
       int k = 0;
       for (int i = 1; i <= 25; i++)
-          if (board[i] == piece.WHITE){
-              whites[k] = i;
-              k = k + 1;
-          }
+        if (this.board[i] == piece.BLACK) {
+          blacks[k] = i;
+          k = k + 1;
+        }
+      return blacks;
+    }
+
+    /*
+    * Returns an integer array of all white piece's positions
+    */
+    public int[] white() {
+      int[] whites = new int[this.whiteCount];
+      int k = 0;
+      for (int i = 1; i <= 25; i++)
+        if (this.board[i] == piece.WHITE) {
+          whites[k] = i;
+          k = k + 1;
+        }
       return whites;
     }
 }
