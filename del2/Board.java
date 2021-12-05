@@ -13,7 +13,7 @@ public class Board{
   }
 
   /*
-  * Setup a new game by initializing class attributes to Alquerques start values
+  * Setup a new board by initializing class attributes to Alquerques start values
   */
   public Board() {
     this.whiteCount = 12;
@@ -29,7 +29,7 @@ public class Board{
   }
 
   /*
-  * Create a new board with positions given in arrays and sets current turn
+  * Setup a new board with positions given in arrays and set current turn
   */
   public Board(int[] whites, int[] blacks, piece turn) {
     this.whiteCount = whites.length;
@@ -61,29 +61,28 @@ public class Board{
   * Returns opposite players piece
   */
   private piece oppositePlayer() {
-    if (this.turn == piece.WHITE)
-      return piece.BLACK;
-    else
-      return piece.WHITE;
+    return (this.turn == piece.WHITE ? piece.BLACK : piece.WHITE);
   }
 
   /*
   * Returns absolute value of x
   */
   private int abs(int x) {
-    return (x >= 0 ? x : -x);
+    return (x < 0 ? -x : x);
   }
 
-  private boolean isLegalDiagonalRight(int from, int to){
-    return (from - 8 == to || from + 12 == to);
+  /*
+  * Checks if move is a diagonal right attack
+  */
+  private boolean diagonalRight(int from, int to){
+    return (from % 2 == 1 && (from - 8 == to || from + 12 == to));
   }
 
-  private boolean isLegalDiagonalLeft(int from, int to){
-    return (from + 8 == to || from - 12 == to);
-  }
-
-  private boolean isLegalVertical(int from, int to) {
-    return (abs(from - to) == 10);
+  /*
+  * Checks if move is a diagonal left attack
+  */
+  private boolean diagonalLeft(int from, int to){
+    return (from % 2 == 1 && (from + 8 == to || from - 12 == to));
   }
 
   /*
@@ -103,9 +102,9 @@ public class Board{
   */
   public boolean isLegal(Move move) {
     boolean isLegal = false;
-    final int originalFrom = move.from(), originalTo = move.to();
-    int from = originalFrom, to = originalTo;
-    int column = originalFrom % 5;
+    int from = move.from(), to = move.to();
+    final int positionBetween = (from + to) / 2;
+    int column = from % 5;
 
     // Return early if 'from' is not current players piece, or 'to' is not free
     if ((this.board[from] != this.turn) || (this.board[to] != piece.FREE))
@@ -152,26 +151,26 @@ public class Board{
     }
 
     // Only enter attack logic if piece in between 'from' and 'to', is an enemy piece
-    else if (this.board[(originalFrom + originalTo) / 2] == oppositePlayer()) {
+    else if (this.board[positionBetween] == oppositePlayer()) {
       // Switch case to handle attack moves in specific columns
       switch (column) {
         // First and second columns
         case 1:
         case 2:
-          if ((from % 2 == 1 && isLegalDiagonalRight(from, to)) || isLegalVertical(from, to) || from + 2 == to)
+          if (diagonalRight(from, to) || abs(from - to) == 10 || from + 2 == to)
             isLegal = true;
           break;
 
         // Third column
         case 3:
-          if ((from % 2 == 1 && (isLegalDiagonalLeft(from, to) || isLegalDiagonalRight(from, to))) || isLegalVertical(from, to) || abs(from - to) == 2)
+          if (diagonalLeft(from, to) || diagonalRight(from, to) || abs(from - to) == 10 || abs(from - to) == 2)
             isLegal = true;
           break;
 
         // Fourth and fifth columns
         case 4:
         case 0:
-          if ((from % 2 == 1 && isLegalDiagonalLeft(from, to)) || isLegalVertical(from, to) || from - 2 == to)
+          if (diagonalLeft(from, to) || abs(from - to) == 10 || from - 2 == to)
             isLegal = true;
           break;
       }
@@ -206,10 +205,6 @@ public class Board{
           if (isLegal(move))
             legalMoves.add(move);
         }
-
-    for (Move move : legalMoves)
-      System.out.println(move.toString());
-    System.out.println();
 
     final Move[] moves = new Move[legalMoves.size()];
     for (int i = 0; i < moves.length; i++)
