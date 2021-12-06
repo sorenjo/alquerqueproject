@@ -52,13 +52,6 @@ public class Move {
   */
   @Override
   public int hashCode() {
-    // Choose arbitrary prime and non-zero result
-    int prime = 31;
-    int result = 17;
-
-    result = prime * result + this.from;
-    result = prime * result + this.to;
-
-    return result;
+    return this.from + 31 * this.to;
   }
 }

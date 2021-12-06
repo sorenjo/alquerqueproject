@@ -67,21 +67,21 @@ public class Board{
   /*
   * Returns absolute value of x
   */
-  private int abs(int x) {
+  private static int abs(int x) {
     return (x < 0 ? -x : x);
   }
 
   /*
   * Checks if move is a diagonal right attack
   */
-  private boolean diagonalRight(int from, int to){
+  private static boolean diagonalRight(int from, int to){
     return (from % 2 == 1 && (from - 8 == to || from + 12 == to));
   }
 
   /*
   * Checks if move is a diagonal left attack
   */
-  private boolean diagonalLeft(int from, int to){
+  private static boolean diagonalLeft(int from, int to){
     return (from % 2 == 1 && (from + 8 == to || from - 12 == to));
   }
 
@@ -98,13 +98,91 @@ public class Board{
   }
 
   /*
+  * Checks if move is forward or diagonal of length 1
+  */
+  private static boolean isForwardMove(int from, int to) {
+    boolean isMove = false;
+    int column = from % 5;
+
+    // Forward move (up for white, down for black)
+    if (from + 5 == to)
+      isMove = true;
+
+    // Diagonal move
+    else {
+      // Switch case to handle logic in specific columns
+      switch (column) {
+        // First column
+        case 1:
+          // Check for right diagonal move
+          if ((from % 2 == 1) && (from + 6 == to))
+            isMove = true;
+          break;
+
+        // Three middle columns
+        case 2:
+        case 3:
+        case 4:
+          // Check for left and right diagonal moves
+          if ((from % 2 == 1) && (from + 4 == to || from + 6 == to))
+            isMove = true;
+          break;
+
+        // Last column
+        case 0:
+          // Check for left diagonal move
+          if ((from % 2 == 1) && (from + 4 == to))
+            isMove = true;
+          break;
+      }
+    }
+
+    return isMove;
+  }
+
+  /*
+  * Checks if move is an attack of length 2
+  */
+  private static boolean isAttack(int from, int to) {
+    boolean isAttack = false;
+    int column = from % 5;
+
+    // Switch case to handle attack moves in specific columns
+    switch (column) {
+      // First and second columns
+      case 1:
+      case 2:
+        // Check every possible attack to the right, up and down
+        if (diagonalRight(from, to) || abs(from - to) == 10 || from + 2 == to)
+          isAttack = true;
+        break;
+
+      // Third column
+      case 3:
+        // Check every possible attack to both sides, up and down
+        if (diagonalLeft(from, to) || diagonalRight(from, to) || abs(from - to) == 10 || abs(from - to) == 2)
+          isAttack = true;
+        break;
+
+      // Fourth and fifth columns
+      case 4:
+      case 0:
+        // Check every possible attack to the left, up and down
+        if (diagonalLeft(from, to) || abs(from - to) == 10 || from - 2 == to)
+          isAttack = true;
+        break;
+    }
+
+    return isAttack;
+  }
+
+  /*
   * Checks if move is valid on the current board
   */
   public boolean isLegal(Move move) {
     boolean isLegal = false;
     int from = move.from(), to = move.to();
     final int positionBetween = (from + to) / 2;
-    int column = from % 5;
 
     // Return early if 'from' is not current players piece, or 'to' is not free
     if ((this.board[from] != this.turn) || (this.board[to] != piece.FREE))
@@ -114,67 +192,14 @@ public class Board{
     if (this.turn == piece.WHITE) {
       from = 26 - from;
       to = 26 - to;
-      column = from % 5;
     }
 
-    // Forward move (up for white, down for black)
-    if (from + 5 == to)
+    if (isForwardMove(from, to))
       isLegal = true;
 
-    // Check if move is diagonal
-    else if (from + 4 == to || from + 6 == to) {
-      // Switch case to handle logic in specific columns
-      switch (column) {
-        // First column
-        case 1:
-          // Check for right diagonal move
-          if ((from % 2 == 1) && (from + 6 == to))
-            isLegal = true;
-          break;
-
-        // Three middle columns
-        case 2:
-        case 3:
-        case 4:
-          // Check for left and right diagonal moves
-          if ((from % 2 == 1) && (from + 4 == to || from + 6 == to))
-            isLegal = true;
-          break;
-
-        // Last column
-        case 0:
-          // Check for left diagonal move
-          if ((from % 2 == 1) && (from + 4 == to))
-            isLegal = true;
-          break;
-      }
-    }
-
     // Only enter attack logic if piece in between 'from' and 'to', is an enemy piece
-    else if (this.board[positionBetween] == oppositePlayer()) {
-      // Switch case to handle attack moves in specific columns
-      switch (column) {
-        // First and second columns
-        case 1:
-        case 2:
-          if (diagonalRight(from, to) || abs(from - to) == 10 || from + 2 == to)
-            isLegal = true;
-          break;
-
-        // Third column
-        case 3:
-          if (diagonalLeft(from, to) || diagonalRight(from, to) || abs(from - to) == 10 || abs(from - to) == 2)
-            isLegal = true;
-          break;
-
-        // Fourth and fifth columns
-        case 4:
-        case 0:
-          if (diagonalLeft(from, to) || abs(from - to) == 10 || from - 2 == to)
-            isLegal = true;
-          break;
-      }
-    }
+    else if (this.board[positionBetween] == oppositePlayer() && isAttack(from, to))
+      isLegal = true;
 
     return isLegal;
   }
@@ -185,22 +210,8 @@ public class Board{
   public Move[] legalMoves() {
     final ArrayList<Move> legalMoves = new ArrayList<Move>();
 
-    /*** int[] possibleTos = {1, 2, 9, 10, 11, 18, 20, 22};
-
     for (int i = 1; i <= 25; i++)
-      for (int j = -1; j <= 1; j = j + 2)
-        for (int to : possibleTos){
-          int t = i+j*i;
-          if (t >= 1 && t <= 25) {
-            Move move = new Move(i, t);
-            if (isLegal(move))
-              legalMoves.add(move);
-          }
-        } ***/
-
-    for (int i = 1; i <= 25; i++)
-      if (this.board[i] == this.turn)
-        for (int j = 1; j <= 25; j++) {
+        for (int j = 1; (this.board[i] == this.turn) && (j <= 25); j++) {
           Move move = new Move(i, j);
           if (isLegal(move))
             legalMoves.add(move);
@@ -236,12 +247,17 @@ public class Board{
   */
   public int[] black() {
     final int[] blacks = new int[this.blackCount];
+    int i = 1;
     int k = 0;
-    for (int i = 1; i <= 25; i++)
+
+    while (i <= 25) {
       if (this.board[i] == piece.BLACK) {
         blacks[k] = i;
-        k = k + 1;
+        k++;
       }
+      i++;
+    }
+
     return blacks;
   }
 
@@ -250,19 +266,24 @@ public class Board{
   */
   public int[] white() {
     final int[] whites = new int[this.whiteCount];
+    int i = 1;
     int k = 0;
-    for (int i = 1; i <= 25; i++)
+
+    while (i <= 25) {
       if (this.board[i] == piece.WHITE) {
         whites[k] = i;
-        k = k + 1;
+        k++;
       }
+      i++;
+    }
+
     return whites;
   }
 
   /*
   * Getter method for 'finishedGames'
   */
-  public int finishedGames() {
+  public static int finishedGames() {
     return Board.finishedGames;
   }
 
@@ -295,15 +316,6 @@ public class Board{
   */
   @Override
   public int hashCode() {
-    // Choose arbitrary prime and non-zero result
-    final int prime = 31;
-    int result = 17;
-
-    result = prime * result + ((this.board) == null ? 0 : this.board.hashCode());
-    result = prime * result + this.whiteCount;
-    result = prime * result + this.blackCount;
-    result = prime * result + ((this.turn) == null ? 0 : this.turn.hashCode());
-
-    return result;
+    return this.board.hashCode() + 31 * this.whiteCount + 31 * 31 * this.blackCount + 31 * 31 * 31 * this.turn.hashCode();
   }
 }
