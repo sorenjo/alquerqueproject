@@ -281,6 +281,20 @@ public class Board{
   }
 
   /*
+  * Getter method for 'whiteCount'
+  */
+  public int whiteCount() {
+    return this.whiteCount;
+  }
+
+  /*
+  * Getter method for 'blackCount'
+  */
+  public int blackCount() {
+    return this.blackCount;
+  }
+
+  /*
   * Getter method for 'finishedGames'
   */
   public static int finishedGames() {
@@ -297,7 +311,6 @@ public class Board{
   /*
   * Checks wether this board is equal to another object
   */
-  @Override
   public boolean equals(Object object) {
     if (object == this)
       return true;
@@ -314,7 +327,6 @@ public class Board{
   /*
   * Returns a hash of this board
   */
-  @Override
   public int hashCode() {
     return this.board.hashCode() + 31 * this.whiteCount + 31 * 31 * this.blackCount + 31 * 31 * 31 * this.turn.hashCode();
   }
