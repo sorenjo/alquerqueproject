@@ -1,48 +1,38 @@
 public class Test {
   public static void main(String[] args) {
-
-    // First column black move
-    // first row 
-    // single move
-    FirstColumnFirstRowSingleMove();
-    System.out.println();
-    FirstColumnFirstRowAttack();
-    System.out.println();
-
-
-    //attack move
+    for (int i = 1; i <= 25; i++)
+        for (int j = 1; j <= 25; j++)
+            if (i != j)
+                TestBoardMoves(new int[]{j}, new int[]{i}, Board.piece.BLACK);
   }
 
     /*
-     * Test legality of single move from first column first row
+     * List legality of the moves for the turn on the board defined by the given arrays of positions for whites and blacks.
+     * Precondition: no overlap of black's and white's positions, and 1 <= position <= 25.
      */
-    private static void FirstColumnFirstRowSingleMove(){
-        Board board = new Board( new int[]{25}, new int[]{1}, Board.piece.BLACK);
+    private static void TestBoardMoves(int[] whites, int[] blacks, Board.piece turn){
+        Board board = new Board(whites, blacks, turn);
         Move[] moves = board.legalMoves();
         PrintAlquerque(board);
         System.out.println("On this board, the following moves are legal");
         System.out.println("(from, to)");
         for (Move m : moves)
             System.out.println(m.toString());
-        System.out.print("The legality of (1,4) is ");
-        System.out.println(board.isLegal(new Move(1,4)));
+        System.out.println();
     }
 
     /*
-     * Test legality of attack from first column first row
+     * Determine legality of a move on the board defined by the given arrays of positions for whites and blacks.
      */
-    private static void FirstColumnFirstRowAttack(){
-        Board board = new Board( new int[]{2}, new int[]{1}, Board.piece.BLACK);
-        Move[] moves = board.legalMoves();
-        PrintAlquerque(board);
-        System.out.println("On this board, the following moves are legal");
-        System.out.println("(from, to)");
-        for (Move m : moves)
-            System.out.println(m.toString());
-        System.out.print("The legality of (1,6) is ");
-        System.out.println(board.isLegal(new Move(1,6)));
+    private static void TestMove(int[] whites, int[] blacks, Board.piece turn, Move move){
+        Board board = new Board(whites, blacks, turn);
+        System.out.print("The legality of " + move + " is ");
+        System.out.println(board.isLegal(move));
     }
 
+    /*
+     * pretty print given alquerque board.
+     */
     private static void PrintAlquerque(Board board){
         char[] pieces = new char[26];
         for (int i = 1; i <= 25; i++)
