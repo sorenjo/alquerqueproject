@@ -13,8 +13,8 @@ public class Board{
   }
 
   /*
-  * Setup a new board by initializing class attributes to Alquerques start values
-  */
+   * Setup a new board by initializing class attributes to Alquerques start values
+   */
   public Board() {
     this.whiteCount = 12;
     this.blackCount = 12;
@@ -29,8 +29,9 @@ public class Board{
   }
 
   /*
-  * Setup a new board with positions given in arrays and set current turn
-  */
+   * Setup a new board with positions given in arrays and set current turn
+   * Precondition: all indices in whites and blacks are >= 0 and <= 25 and whites and blacks share no entries
+   */
   public Board(int[] whites, int[] blacks, piece turn) {
     this.whiteCount = whites.length;
     this.blackCount = blacks.length;
@@ -46,8 +47,29 @@ public class Board{
   }
 
   /*
-  * Checks if game is over and increments finishedGames if so
-  */
+   * Getter method for 'whiteCount'
+   */
+  public int whiteCount() {
+    return this.whiteCount;
+  }
+
+  /*
+   * Getter method for 'blackCount'
+   */
+  public int blackCount() {
+    return this.blackCount;
+  }
+
+  /*
+   * Getter method for 'finishedGames'
+   */
+  public static int finishedGames() {
+    return Board.finishedGames;
+  }
+
+  /*
+   * Checks if game is over and increments finishedGames if so
+   */
   public boolean isGameOver() {
     boolean isGameOver = (black().length == 0 || white().length == 0 || legalMoves().length == 0);
 
@@ -58,36 +80,39 @@ public class Board{
   }
 
   /*
-  * Returns opposite players piece
-  */
+   * Returns opposite players piece
+   */
   private piece oppositePlayer() {
     return (this.turn == piece.WHITE ? piece.BLACK : piece.WHITE);
   }
 
   /*
-  * Returns absolute value of x
-  */
+   * Returns absolute value of x
+   */
   private static int abs(int x) {
     return (x < 0 ? -x : x);
   }
 
   /*
-  * Checks if move is a diagonal right attack
-  */
+   * Checks if move is a diagonal right attack
+   * Precondition: 0 <= from <= 25 && 0 <= to <= 25 
+   */
   private static boolean diagonalRight(int from, int to){
     return (from % 2 == 1 && (from - 8 == to || from + 12 == to));
   }
 
   /*
-  * Checks if move is a diagonal left attack
-  */
+   * Checks if move is a diagonal left attack
+   * Precondition: 0 <= from <= 25 && 0 <= to <= 25 
+   */
   private static boolean diagonalLeft(int from, int to){
     return (from % 2 == 1 && (from + 8 == to || from - 12 == to));
   }
 
   /*
-  * Sets killed piece's position to FREE and decreases its player's piece count by one
-  */
+   * Sets killed piece's position to FREE and decreases its player's piece count by one
+   * Precondition: 0 <= index <= 25
+   */
   private void kill(int index) {
     if (this.board[index] == piece.WHITE)
       this.whiteCount--;
@@ -98,8 +123,9 @@ public class Board{
   }
 
   /*
-  * Checks if move is forward or diagonal of length 1
-  */
+   * Checks if move is forward or diagonal of length 1
+   * Precondition: 0 <= from <= 25 && 0 <= to <= 25 
+   */
   private static boolean isForwardMove(int from, int to) {
     boolean isMove = false;
     int column = from % 5;
@@ -141,8 +167,9 @@ public class Board{
   }
 
   /*
-  * Checks if move is an attack of length 2
-  */
+   * Checks if move is an attack of length 2
+   * Precondition: 0 <= from <= 25 && 0 <= to <= 25 
+   */
   private static boolean isAttack(int from, int to) {
     boolean isAttack = false;
     int column = from % 5;
@@ -177,8 +204,9 @@ public class Board{
   }
 
   /*
-  * Checks if move is valid on the current board
-  */
+   * Checks if move is valid on the current board
+   * Precondition: 0 <= from <= 25 && 0 <= to <= 25 
+   */
   public boolean isLegal(Move move) {
     boolean isLegal = false;
     int from = move.from(), to = move.to();
@@ -205,8 +233,8 @@ public class Board{
   }
 
   /*
-  * Returns an array of all current player's possible moves
-  */
+   * Returns an array of all current player's possible moves
+   */
   public Move[] legalMoves() {
     final ArrayList<Move> legalMoves = new ArrayList<Move>();
 
@@ -225,8 +253,9 @@ public class Board{
   }
 
   /*
-  * Moves piece using a Move-instance
-  */
+   * Moves piece using a Move-instance
+   * Precondition: move is legal move in this board
+   */
   public void move(Move move) {
     int from = move.from();
     int to = move.to();
@@ -243,8 +272,8 @@ public class Board{
   }
 
   /*
-  * Returns an integer array of all black piece's positions
-  */
+   * Returns an integer array of all black piece's positions
+   */
   public int[] black() {
     final int[] blacks = new int[this.blackCount];
     int i = 1;
@@ -262,8 +291,8 @@ public class Board{
   }
 
   /*
-  * Returns an integer array of all white piece's positions
-  */
+   * Returns an integer array of all white piece's positions
+   */
   public int[] white() {
     final int[] whites = new int[this.whiteCount];
     int i = 1;
@@ -280,37 +309,17 @@ public class Board{
     return whites;
   }
 
-  /*
-  * Getter method for 'whiteCount'
-  */
-  public int whiteCount() {
-    return this.whiteCount;
-  }
 
   /*
-  * Getter method for 'blackCount'
-  */
-  public int blackCount() {
-    return this.blackCount;
-  }
-
-  /*
-  * Getter method for 'finishedGames'
-  */
-  public static int finishedGames() {
-    return Board.finishedGames;
-  }
-
-  /*
-  * Returns a copy of this board
-  */
+   * Returns a copy of this board
+   */
   public Board copy() {
     return new Board(white(), black(), this.turn);
   }
 
   /*
-  * Checks wether this board is equal to another object
-  */
+   * Checks wether this board is equal to another object
+   */
   public boolean equals(Object object) {
     if (object == this)
       return true;
@@ -325,8 +334,8 @@ public class Board{
   }
 
   /*
-  * Returns a hash of this board
-  */
+   * Returns a hash of this board
+   */
   public int hashCode() {
     return this.board.hashCode() + 31 * this.whiteCount + 31 * 31 * this.blackCount + 31 * 31 * 31 * this.turn.hashCode();
   }
