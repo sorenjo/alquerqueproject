@@ -71,7 +71,7 @@ public class Board{
    * Checks if game is over and increments finishedGames if so
    */
   public boolean isGameOver() {
-    boolean isGameOver = (black().length == 0 || white().length == 0 || legalMoves().length == 0);
+    boolean isGameOver = (blackCount == 0 || whiteCount == 0 || legalMoves().length == 0);
 
     if (isGameOver)
       this.finishedGames++;
