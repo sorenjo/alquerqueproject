@@ -1,8 +1,8 @@
 public class Test {
   public static void main(String[] args) {
 
+    // regular moves
     // test of moves in the first and fifth columns
-    /*
     for (int i = 1; i <= 21; i = i + 5)
       TestBoardMoves(new int[]{}, new int[]{i}, Board.piece.BLACK);
 
@@ -11,17 +11,13 @@ public class Test {
 
     for (int i = 5; i <= 25; i = i + 5)
       TestBoardMoves(new int[]{}, new int[]{i}, Board.piece.BLACK);
-    */
 
     // test of moves in the second, third or fourth columns
-    /*
     for (int i = 2; i <= 24; i = i + 5)
       TestBoardMoves(new int[]{}, new int[]{i}, Board.piece.BLACK);
-    */
 
     // test of axial attack moves in
     // first column
-    /*
     for (int i = 1; i <= 21; i = i + 5)
       TestBoardMoves(new int[]{i+1}, new int[]{i}, Board.piece.BLACK);
 
@@ -41,7 +37,6 @@ public class Test {
 
     for (int i = 3; i <= 18; i = i + 5)
       TestBoardMoves(new int[]{i+5}, new int[]{i}, Board.piece.BLACK);
-    */
 
     // test of diagonal attack moves in
     // first column
@@ -58,12 +53,11 @@ public class Test {
     for (int i = 3; i <= 18; i = i + 5)
       TestBoardMoves(new int[]{i+6, i+4}, new int[]{i}, Board.piece.BLACK);
     TestBoardMoves(new int[]{7,9,17,19}, new int[]{13}, Board.piece.BLACK);
+    
+    //test of equals
+    Board board = new Board();
+    System.out.println("board.equals(board.copy) := " + board.equals(board.copy()));
 
-
-    /*
-    for (int i = 5; i <= 25; i = i + 5)
-      TestBoardMoves(new int[]{}, new int[]{i}, Board.piece.BLACK);
-    */
   }
 
 
