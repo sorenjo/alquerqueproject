@@ -1,3 +1,5 @@
+import java.util.Iterator;
+
 public class MinimaxTree implements Iterable<Board> {
     private Node root;
     boolean isWhite;
@@ -13,6 +15,7 @@ public class MinimaxTree implements Iterable<Board> {
         private Board board;
         private Node[] children;
         private int depth;
+        private boolean isMax;
 
         /*
          * constructs a new node 
@@ -22,10 +25,13 @@ public class MinimaxTree implements Iterable<Board> {
             this.board = board;
             this.isMax = isMax;
             if (depth > 0){
-                Move[] legalMoves = board.legalMoves;
+                Move[] legalMoves = board.legalMoves();
                 children = new Node[legalMoves.length];
-                for (int i = 0; i < children.length; i++)
-                    children[i] = new Node(board.copy().move(legalMoves[i]), depth - 1, !isMax);
+                for (int i = 0; i < children.length; i++){
+                    Board newBoard = board.copy();
+                    newBoard.move(legalMoves[i]);
+                    children[i] = new Node(newBoard, depth - 1, !isMax);
+                }
             }
             else {
                 children = null;
@@ -40,15 +46,15 @@ public class MinimaxTree implements Iterable<Board> {
             if (isMax)
                 return max(scores, true);
             else 
-                return max(score, false);
+                return max(scores, false);
                 
         }
 
         /*
          * Returns the maximum of an array if sign == true, otherwise the minumum.
          */
-        private static int minmax(int[] v, boolean sign){
-            int max = int[0];
+        private static int max(int[] v, boolean sign){
+            int max = v[0];
             int s = sign? 1: -1;
             for (int i = 1; i < v.length; i++)
                 if (max < s*v[i])
@@ -57,10 +63,26 @@ public class MinimaxTree implements Iterable<Board> {
         }
     }
 
-    private class iterator() implements Iterator{
+    public Iterator<Board> iterator(){
+        return new TreeIterator<Board>();
+    }
+
+    private class TreeIterator<Board> implements Iterator<Board>{
+
+        private TreeIterator(){
+        }
+        public boolean hasNext(){
+            return true;
+        }
+
+        public Board next(){
+            return null;
+        }
+
     }
 
     public Move next(){
+        return new Move(-1,-1);
         
     }
 
