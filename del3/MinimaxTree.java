@@ -1,14 +1,15 @@
 import java.util.Iterator;
+import java.util.Stack;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 
 public class MinimaxTree implements Iterable<Board> {
     private Node root;
     boolean isWhite;
 
-
     public MinimaxTree(Board board, int depth, boolean isWhite){
         root = new Node(board.copy(), depth - 1, true); 
         this.isWhite = isWhite;
-
     }
 
     private static class Node{
@@ -51,7 +52,7 @@ public class MinimaxTree implements Iterable<Board> {
         }
 
         /*
-         * Returns the maximum of an array if sign == true, otherwise the minumum.
+         * Returns the maximum of an array if sign == true, otherwise the minimum.
          */
         private static int max(int[] v, boolean sign){
             int max = v[0];
@@ -64,29 +65,60 @@ public class MinimaxTree implements Iterable<Board> {
     }
 
     public Iterator<Board> iterator(){
-        return new TreeIterator<Board>();
+        return new TreeIterator();
     }
 
-    private class TreeIterator<Board> implements Iterator<Board>{
-
-        private TreeIterator(){
-        }
-        public boolean hasNext(){
-            return true;
-        }
-
-        public Board next(){
-            return null;
-        }
-
-    }
-
-    public Move next(){
-        return new Move(-1,-1);
+    private class TreeIterator implements Iterator<Board>{
         
+        private Stack<Node> nextNodes;
+
+        /*
+         * Create a new tree iterator
+         */
+        private TreeIterator(){
+            nextNodes = new Stack<Node>();
+            if (root != null)
+                nextNodes.add(root);
+        }
+
+        /*
+         * determines whether this iterator has an element to return.
+         */
+        public boolean hasNext(){
+            return (!nextNodes.empty());
+        }
+
+        /*
+         * returns the next board of this tree iterator
+         */
+        public Board next(){
+            if (nextNodes.empty())
+                throw new NoSuchElementException("No more boards in this minimax tree");
+            Node next = nextNodes.pop();
+            Board board = next.board;
+            if (next.children != null)
+                for (Node child: next.children)
+                    nextNodes.push(child);
+
+            return board;
+        }
+    }
+
+    public Move nextMove(){
+        return new Move(-1,-1);
     }
 
     private static int heuristic(Board board, Move move, boolean isWhite){
         return isWhite ? board.white().length - board.black().length: board.black().length - board.white().length;
+    }
+
+    /*
+     * Test of methods.
+     */
+    public static void main(String[] args){
+        Board board = new Board();
+        MinimaxTree boardTree = new MinimaxTree(board, 3, true);
+        for (Board b: boardTree)
+            System.out.println(board);
     }
 }
