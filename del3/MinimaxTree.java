@@ -25,8 +25,8 @@ public class MinimaxTree implements Iterable<Board> {
             this.depth = depth;
             this.board = board;
             this.isMax = isMax;
-            if (depth > 0){
-                Move[] legalMoves = board.legalMoves();
+            Move[] legalMoves = board.legalMoves();
+            if (depth > 0 && legalMoves.length > 0){ // edgecase: if there are no legal moves for a board it's children will point to null instead of an empty children array.
                 children = new Node[legalMoves.length];
                 for (int i = 0; i < children.length; i++){
                     Board newBoard = board.copy();
@@ -45,27 +45,28 @@ public class MinimaxTree implements Iterable<Board> {
                 scores[i] = children[i].minimax();
             int max = 0;
             if (isMax)
-                return max(scores, true);
+                return extremum(scores, true);
             else 
-                return max(scores, false);
+                return extremum(scores, false);
                 
         }
 
-        /*
-         * Returns the maximum of an array if sign == true, otherwise the minimum.
-         */
-        private static int max(int[] v, boolean sign){
-            int max = v[0];
-            int s = sign? 1: -1;
-            for (int i = 1; i < v.length; i++)
-                if (max < s*v[i])
-                    max = v[i];
-            return max;
-        }
     }
 
     public Iterator<Board> iterator(){
         return new TreeIterator();
+    }
+
+    /*
+     * Returns the maximum of an array if sign == true, otherwise the minimum.
+     */
+    private static int extremum(int[] v, boolean sign){
+        int max = v[0];
+        int s = sign? 1: -1;
+        for (int i = 1; i < v.length; i++)
+            if (max < s*v[i])
+                max = v[i];
+        return max;
     }
 
     private class TreeIterator implements Iterator<Board>{
