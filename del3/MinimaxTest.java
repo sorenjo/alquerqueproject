@@ -5,13 +5,12 @@ public class MinimaxTest{
         for (Board b: boardTree){
             System.out.println("---------------");
             printAlquerque(b);
-            }
-        /*
-        Move bestMove = Minimax.nextMove(board, 3, true);
-        System.out.println( "(" + bestMove.from() + ", " + bestMove.to() + ")");
-        */
+        }
+
+        //Move bestMove = Minimax.nextMove(board, 1, true);
+        //System.out.println( "(" + bestMove.from() + ", " + bestMove.to() + ")");
     }
-    private static void printAlquerque(Board board){
+    public static void printAlquerque(Board board){
         char[] pieces = new char[26];
         for (int i = 1; i <= 25; i++)
             pieces[i] = ' ';

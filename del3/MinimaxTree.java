@@ -5,11 +5,16 @@ import java.util.Objects;
 
 public class MinimaxTree implements Iterable<Board> {
     private Node root;
+    private int[] scores;
     boolean isWhite;
 
+
     public MinimaxTree(Board board, int depth, boolean isWhite){
-        root = new Node(board.copy(), depth - 1, true); 
+        root = new Node(board.copy(), depth, false); 
         this.isWhite = isWhite;
+        scores = new int[root.children.length];
+        for (int i = 0; i < scores.length; i++)
+            scores[i] = root.children[i].minimax();
     }
 
     private static class Node{
@@ -26,7 +31,7 @@ public class MinimaxTree implements Iterable<Board> {
             this.board = board;
             this.isMax = isMax;
             Move[] legalMoves = board.legalMoves();
-            if (depth > 0 && legalMoves.length > 0){ // edgecase: if there are no legal moves for a board it's children will point to null instead of an empty children array.
+            if (depth > 0){ // edgecase: if there are no legal moves for a board it's children will point to null instead of an empty children array.
                 children = new Node[legalMoves.length];
                 for (int i = 0; i < children.length; i++){
                     Board newBoard = board.copy();
@@ -39,18 +44,30 @@ public class MinimaxTree implements Iterable<Board> {
             }
         }
 
+        /*
+         * Assign scores for each of the leaves.
+         */
         private int minimax(){
-            int[] scores = new int[children.length];
-            for (int i = 0; i < children.length; i++)
-                scores[i] = children[i].minimax();
-            int max = 0;
-            if (isMax)
-                return extremum(scores, true);
-            else 
-                return extremum(scores, false);
-                
+            if (children == null)
+                return heuristic();
+            else{ // children != null
+                int[] scores = new int[children.length];
+                for (int i = 0; i < children.length; i++)
+                    scores[i] = children[i].minimax();
+                if (isMax)
+                    return extremum(scores, true);
+                else 
+                    return extremum(scores, false);
+            }
         }
 
+        /*
+         * compute a rating for a given board
+         */
+        private int heuristic(){
+            System.out.println(" " + (board.white().length - board.black().length));
+            return isMax ? board.white().length - board.black().length: board.black().length - board.white().length; //TODO: ikke sikker på det her virker som det burde
+        }
     }
 
     public Iterator<Board> iterator(){
@@ -106,20 +123,24 @@ public class MinimaxTree implements Iterable<Board> {
     }
 
     public Move nextMove(){
+        System.out.println("Score of best move: " + root.minimax());
         return new Move(-1,-1);
     }
 
-    private static int heuristic(Board board, Move move, boolean isWhite){
-        return isWhite ? board.white().length - board.black().length: board.black().length - board.white().length;
-    }
 
     /*
      * Test of methods.
      */
+    /*
     public static void main(String[] args){
         Board board = new Board();
-        MinimaxTree boardTree = new MinimaxTree(board, 3, true);
-        for (Board b: boardTree)
-            System.out.println(board);
+        MinimaxTree boardTree = new MinimaxTree(board, 5, true);
+        for (Board b: boardTree){
+            System.out.println("-------------");
+            MinimaxTest.printAlquerque(b);
+        }
+
+        System.out.println(root.minimax());
     }
+    */
 }
