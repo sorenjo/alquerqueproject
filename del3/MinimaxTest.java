@@ -1,11 +1,13 @@
 public class MinimaxTest{
     public static void main(String[] args){
         Board board = new Board();
-        MinimaxTree boardTree = new MinimaxTree(board, 3, true);
+        MinimaxTree boardTree = new MinimaxTree(board, 4, true);
         for (Board b: boardTree){
             System.out.println("---------------");
             printAlquerque(b);
         }
+
+        System.out.println("Score of best move: " + boardTree.bestScore());
 
         //Move bestMove = Minimax.nextMove(board, 1, true);
         //System.out.println( "(" + bestMove.from() + ", " + bestMove.to() + ")");
