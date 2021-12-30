@@ -33,8 +33,6 @@ public class MinimaxTree implements Iterable<Board> {
             this.isMax = isMax;
             this.isWhite = isWhite;
             Move[] legalMoves = board.legalMoves();
-            //for (Move m: legalMoves)
-            //    System.out.println(m.from() + " " + m.to());
             if (depth > 0 && legalMoves.length != 0) { // edgecase: if there are no legal moves for a board it's children will point to null instead of an empty children array.
                 children = new Node[legalMoves.length];
                 for (int i = 0; i < children.length; i++) {
@@ -61,7 +59,7 @@ public class MinimaxTree implements Iterable<Board> {
                     scores[i] = children[i].minimax();
 
                 int min = scores[0];
-                int max = min;
+                int max = scores[0];
 
                 for (int i = 1; i < scores.length; i++) {
                     if (min > scores[i])
@@ -79,9 +77,12 @@ public class MinimaxTree implements Iterable<Board> {
          * Compute a rating for a given board
          */
         private int heuristic() {
-            int rating = isWhite ? board.white().length - board.black().length : board.black().length - board.white().length; 
-            System.out.println(" " + rating);
-            return rating;
+            //int rating = isWhite ? board.white().length - board.black().length : board.black().length - board.white().length;
+            if (isMax)
+              return isWhite ? board.white().length - board.black().length : board.black().length - board.white().length;
+            else
+              return !isWhite ? board.white().length - board.black().length : board.black().length - board.white().length;
+            //return isMax ? rating : -rating;
         }
     }
 
@@ -126,17 +127,11 @@ public class MinimaxTree implements Iterable<Board> {
     }
 
     public Move nextMove() {
-        System.out.println("Score of best move: " + root.minimax());
         int index = 0;
         for (int i = 1; i < root.children.length; i ++)
             if (scores[i] > scores[index]){
                 index = i;
             }
-        //int n = root.minimax();
-        //int i = 0;
-
-        // Skal på en eller anden måde få fat det rigtige move fra minimax, men den returnerer en score
-        // 'i' skal sættes til det rigtige index i legalMoves ud fra scoren gemt i 'n'
 
         return root.board.legalMoves()[index];
     }
