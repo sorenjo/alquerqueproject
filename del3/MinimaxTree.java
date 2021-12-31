@@ -9,6 +9,7 @@ public class MinimaxTree implements Iterable<Board> {
 
     /*
      * Construct a new minimax tree
+     * Precondition: depth > 0
      */
     public MinimaxTree(Board board, int depth, boolean isWhite) {
         root = new Node(board, depth, true);
@@ -28,6 +29,7 @@ public class MinimaxTree implements Iterable<Board> {
 
         /*
          * Constructs a new node
+         * precondition depth > 0
          */
         private Node(Board board, int depth, boolean isMax) {
             this.depth = depth;
@@ -85,6 +87,19 @@ public class MinimaxTree implements Iterable<Board> {
     }
 
     /*
+     * Returns best move for current board
+     */
+    public Move nextMove() {
+        int index = 0;
+        for (int i = 1; i < scores.length; i ++)
+            if (scores[i] > scores[index]){
+                index = i;
+            }
+
+        return root.board.legalMoves()[index];
+    }
+
+    /*
      * Returns an iterator object over this tree
      */
     public Iterator<Board> iterator() {
@@ -112,7 +127,8 @@ public class MinimaxTree implements Iterable<Board> {
         }
 
         /*
-         * Returns the next board of this tree iterator
+         * Returns the next board of this tree iterator.
+         * Precondition: hasNext() == true
          */
         public Board next() {
             if (nextNodes.empty())
@@ -125,18 +141,5 @@ public class MinimaxTree implements Iterable<Board> {
 
             return board;
         }
-    }
-
-    /*
-    * Returns best move for current board
-    */
-    public Move nextMove() {
-        int index = 0;
-        for (int i = 1; i < scores.length; i ++)
-            if (scores[i] > scores[index]){
-                index = i;
-            }
-
-        return root.board.legalMoves()[index];
     }
 }
