@@ -6,39 +6,35 @@ import java.util.Objects;
 public class MinimaxTree implements Iterable<Board> {
     private Node root;
     private int[] scores;
-    private boolean isWhite;
-
 
     public MinimaxTree(Board board, int depth, boolean isWhite) {
-        root = new Node(board, depth, true, isWhite);
+        root = new Node(board, depth, true);
         scores = new int[root.children.length];
         for (int i = 0; i < scores.length; i++)
-            scores[i] = root.children[i].minimax();
-        this.isWhite = isWhite;
+            scores[i] = root.children[i].minimax(isWhite);
     }
 
     private static class Node {
         private Board board;
         private Node[] children;
         private int depth;
-        private boolean isWhite; //does this node's children represent a white move. (is the transition from this parent node's board to a child node's board accomplished by a white move.
-        private boolean isMax; // if root node isWhite, then isMax == isWhite.
+        private boolean isMax;
 
         /*
          * Constructs a new node
          */
-        private Node(Board board, int depth, boolean isMax, boolean isWhite) {
+        private Node(Board board, int depth, boolean isMax) {
             this.depth = depth;
             this.board = board;
             this.isMax = isMax;
-            this.isWhite = isWhite;
+
             Move[] legalMoves = board.legalMoves();
             if (depth > 0 && legalMoves.length != 0) { // edgecase: if there are no legal moves for a board it's children will point to null instead of an empty children array.
                 children = new Node[legalMoves.length];
                 for (int i = 0; i < children.length; i++) {
                     Board newBoard = board.copy();
                     newBoard.move(legalMoves[i]);
-                    children[i] = new Node(newBoard, depth - 1, !isMax, !isWhite);
+                    children[i] = new Node(newBoard, depth - 1, !isMax);
                 }
             }
             else {
@@ -49,14 +45,14 @@ public class MinimaxTree implements Iterable<Board> {
         /*
          * Assign scores for each of the leaves. TODO: det her virker ikke som det burde, den giver nogle scores der ikke giver mening.
          */
-        private int minimax() {
+        private int minimax(boolean isWhite) {
             if (children == null)
-                return heuristic();
+                return heuristic(isWhite);
 
-            else { // children != null
+            else {
                 int[] scores = new int[children.length];
                 for (int i = 0; i < children.length; i++)
-                    scores[i] = children[i].minimax();
+                    scores[i] = children[i].minimax(isWhite);
 
                 int min = scores[0];
                 int max = scores[0];
@@ -76,13 +72,9 @@ public class MinimaxTree implements Iterable<Board> {
         /*
          * Compute a rating for a given board
          */
-        private int heuristic() {
-            //int rating = isWhite ? board.white().length - board.black().length : board.black().length - board.white().length;
-            if (isMax)
-              return isWhite ? board.white().length - board.black().length : board.black().length - board.white().length;
-            else
-              return !isWhite ? board.white().length - board.black().length : board.black().length - board.white().length;
-            //return isMax ? rating : -rating;
+        private int heuristic(boolean isWhite) {
+            return isWhite ? board.white().length - board.black().length :
+                             board.black().length - board.white().length;
         }
     }
 
@@ -126,20 +118,18 @@ public class MinimaxTree implements Iterable<Board> {
         }
     }
 
+    /*
+    * Returns best move for current board
+    */
     public Move nextMove() {
         int index = 0;
-        for (int i = 1; i < root.children.length; i ++)
+        for (int i = 1; i < scores.length; i ++)
             if (scores[i] > scores[index]){
                 index = i;
             }
 
         return root.board.legalMoves()[index];
     }
-
-    public int bestScore() {
-        return root.minimax();
-    }
-
 
     /*
      * Test of methods.
