@@ -7,6 +7,9 @@ public class MinimaxTree implements Iterable<Board> {
     private Node root;
     private int[] scores;
 
+    /*
+     * Construct a new minimax tree
+     */
     public MinimaxTree(Board board, int depth, boolean isWhite) {
         root = new Node(board, depth, true);
         scores = new int[root.children.length];
@@ -14,6 +17,9 @@ public class MinimaxTree implements Iterable<Board> {
             scores[i] = root.children[i].minimax(isWhite);
     }
 
+    /*
+     * Private inner class for representing nodes in a tree
+     */
     private static class Node {
         private Board board;
         private Node[] children;
@@ -43,7 +49,7 @@ public class MinimaxTree implements Iterable<Board> {
         }
 
         /*
-         * Assign scores for each of the leaves. TODO: det her virker ikke som det burde, den giver nogle scores der ikke giver mening.
+         * Assign scores for each of the leaves.
          */
         private int minimax(boolean isWhite) {
             if (children == null)
@@ -78,6 +84,9 @@ public class MinimaxTree implements Iterable<Board> {
         }
     }
 
+    /*
+     * Returns an iterator object over this tree
+     */
     public Iterator<Board> iterator() {
         return new TreeIterator();
     }
@@ -130,20 +139,4 @@ public class MinimaxTree implements Iterable<Board> {
 
         return root.board.legalMoves()[index];
     }
-
-    /*
-     * Test of methods.
-     */
-    /*
-    public static void main(String[] args){
-        Board board = new Board();
-        MinimaxTree boardTree = new MinimaxTree(board, 5, true);
-        for (Board b: boardTree){
-            System.out.println("-------------");
-            MinimaxTest.printAlquerque(b);
-        }
-
-        System.out.println(root.minimax());
-    }
-    */
 }
