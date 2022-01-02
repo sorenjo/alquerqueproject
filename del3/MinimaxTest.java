@@ -1,16 +1,20 @@
 public class MinimaxTest{
+    /*
+     * Test of MinimaxTree public methods.
+     * Using our own implementations of Board and Move.
+     */
     public static void main(String[] args){
         Board board = new Board();
-        MinimaxTree boardTree = new MinimaxTree(board, 4, true);
+        //Test of iterator in for each loop.
+        MinimaxTree boardTree = new MinimaxTree(board, 2, true);
         for (Board b: boardTree){
             System.out.println("---------------");
             printAlquerque(b);
         }
-
-        System.out.println("Score of best move: " + boardTree.bestScore());
-
-        //Move bestMove = Minimax.nextMove(board, 1, true);
-        //System.out.println( "(" + bestMove.from() + ", " + bestMove.to() + ")");
+    
+        //Test of nextMove()
+        Move bestMove = Minimax.nextMove(board, 1, true);
+        System.out.println( "(" + bestMove.from() + ", " + bestMove.to() + ")");
     }
     public static void printAlquerque(Board board){
         char[] pieces = new char[26];

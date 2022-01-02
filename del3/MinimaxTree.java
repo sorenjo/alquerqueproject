@@ -8,7 +8,7 @@ public class MinimaxTree implements Iterable<Board> {
     private int[] scores;
 
     /*
-     * Construct a new minimax tree
+     * Construct a new minimax tree.
      * Precondition: depth > 0
      */
     public MinimaxTree(Board board, int depth, boolean isWhite) {
@@ -19,7 +19,7 @@ public class MinimaxTree implements Iterable<Board> {
     }
 
     /*
-     * Private inner class for representing nodes in a tree
+     * Private inner class for representing nodes in a tree.
      */
     private static class Node {
         private Board board;
@@ -28,7 +28,7 @@ public class MinimaxTree implements Iterable<Board> {
         private boolean isMax;
 
         /*
-         * Constructs a new node
+         * Constructs a new node.
          * precondition depth > 0
          */
         private Node(Board board, int depth, boolean isMax) {
@@ -51,7 +51,7 @@ public class MinimaxTree implements Iterable<Board> {
         }
 
         /*
-         * Assign scores for each of the leaves.
+         * Recursively compute the minimax value of this node, given as either the minimum or maximum of children minimax values.
          */
         private int minimax(boolean isWhite) {
             if (children == null)
@@ -78,7 +78,7 @@ public class MinimaxTree implements Iterable<Board> {
         }
 
         /*
-         * Compute a rating for a given board
+         * Compute a rating for this node's board.
          */
         private int heuristic(boolean isWhite) {
             return isWhite ? board.white().length - board.black().length :
@@ -141,5 +141,37 @@ public class MinimaxTree implements Iterable<Board> {
 
             return board;
         }
+    }
+    /*
+     * Test of private methods.
+     * Using our implementations of Board and Move.
+     */
+    public static void main(String[] args){
+        //test of heuristic method
+        Node testNode = new Node(new Board(new int[]{24,25}, new int[]{1,2,3,4}, Board.piece.BLACK), 0, true);
+        MinimaxTest.printAlquerque(testNode.board);
+        System.out.println("heuristic rating (for black) of this board is: " + testNode.heuristic(false)); //should give 2
+        System.out.println("heuristic rating (for white) of this board is: " + testNode.heuristic(true)); //should give -2
+        System.out.println();
+        //test of scores[] minimax method
+        MinimaxTree testTree= new MinimaxTree(new Board(new int[]{7,8,9,12,14,17,18,19}, new int[]{13}, Board.piece.BLACK), 1, false);
+        MinimaxTest.printAlquerque(testTree.root.board);
+        for (int score: testTree.scores)
+            System.out.println(score);//should all be -6
+        /*
+        for (Board b: testTree)
+            MinimaxTest.printAlquerque(b);
+        */
+
+
+
+
+
+        /*for (int i = 1; i <= 7; i++){
+            Node tree = new Node(new Board(), i, true);
+            for (Node n: tree.children)
+                System.out.println(tree.minimax(true));
+        }
+        */
     }
 }
