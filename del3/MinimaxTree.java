@@ -9,7 +9,7 @@ public class MinimaxTree implements Iterable<Board> {
 
     /*
      * Construct a new minimax tree.
-     * Precondition: depth > 0
+     * Precondition: depth > 0 and !board.isGameOver().
      */
     public MinimaxTree(Board board, int depth, boolean isWhite) {
         root = new Node(board, depth, true);
@@ -153,25 +153,10 @@ public class MinimaxTree implements Iterable<Board> {
         System.out.println("heuristic rating (for black) of this board is: " + testNode.heuristic(false)); //should give 2
         System.out.println("heuristic rating (for white) of this board is: " + testNode.heuristic(true)); //should give -2
         System.out.println();
-        //test of scores[] minimax method
+        //test of scores[] and minimax method
         MinimaxTree testTree= new MinimaxTree(new Board(new int[]{7,8,9,12,14,17,18,19}, new int[]{13}, Board.piece.BLACK), 1, false);
         MinimaxTest.printAlquerque(testTree.root.board);
         for (int score: testTree.scores)
             System.out.println(score);//should all be -6
-        /*
-        for (Board b: testTree)
-            MinimaxTest.printAlquerque(b);
-        */
-
-
-
-
-
-        /*for (int i = 1; i <= 7; i++){
-            Node tree = new Node(new Board(), i, true);
-            for (Node n: tree.children)
-                System.out.println(tree.minimax(true));
-        }
-        */
     }
 }

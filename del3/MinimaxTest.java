@@ -4,17 +4,19 @@ public class MinimaxTest{
      * Using our own implementations of Board and Move.
      */
     public static void main(String[] args){
-        Board board = new Board();
         //Test of iterator in for each loop.
-        MinimaxTree boardTree = new MinimaxTree(board, 2, true);
+        MinimaxTree boardTree = new MinimaxTree(new Board(), 1, true);
         for (Board b: boardTree){
             System.out.println("---------------");
             printAlquerque(b);
         }
+        System.out.println();
     
         //Test of nextMove()
-        Move bestMove = Minimax.nextMove(board, 1, true);
-        System.out.println( "(" + bestMove.from() + ", " + bestMove.to() + ")");
+        Board board = new Board(new int[]{2}, new int[]{1}, Board.piece.BLACK);
+        printAlquerque(board);
+        System.out.print("Best move for black in above scenario: ");
+        System.out.println(Minimax.nextMove(board, 2, false)); //should be (1,3)
     }
     public static void printAlquerque(Board board){
         char[] pieces = new char[26];
